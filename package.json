@@ -1,0 +1,15 @@
+{
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "eris": "github:abalabahaha/eris#dev",
+    "superagent": "^6.1.0",
+    "yuuko": "^2.1.1"
+  },
+  "devDependencies": {
+    "@geo1088/eslint-config": "^3.1.0",
+    "eslint": "^7.22.0"
+  }
+}
