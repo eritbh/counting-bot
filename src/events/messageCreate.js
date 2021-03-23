@@ -24,16 +24,19 @@ module.exports = new EventListener('messageCreate', async (message, context) => 
 	// Get the latest messages from the channel and find the last one that was counting
 	const oldMessages = await message.channel.getMessages();
 	oldMessages.splice(0, oldMessages.findIndex(m => m.id === message.id) + 1);
-	let lastNumber = oldMessages.map(m => parseInt(m.content.replace(/[,.]/g, ''), 10)).filter(m => !isNaN(m))[0];
+	// eslint-disable-next-line prefer-const,no-unused-vars
+	let [lastAuthor, lastNumber] = oldMessages.map(m => [m.author.id, parseInt(m.content.replace(/[,.]/g, ''), 10)]).filter(([author, num]) => !isNaN(num))[0] || [null, null];
 	if (lastNumber == null) {
 		lastNumber = 0;
 	}
 
 	const numberIsCorrect = numberPart === lastNumber + 1;
 	const isOnlyNumber = !!message.content.match(/^\d+$/);
+	const isLastAuthor = message.author.id === lastAuthor;
 
-	if (numberIsCorrect && !isOnlyNumber || !numberIsCorrect && isOnlyNumber) {
+	if (numberIsCorrect && (!isOnlyNumber || isLastAuthor) || !numberIsCorrect && isOnlyNumber) {
 		// if the number is right but has other text, delete it
+		// if the number is right but was sent by the same person who sent the previous number, delete it
 		// if the number is wrong and doesn't have other text, delete it
 		message.delete().catch(error => {
 			console.error('error deleting bad number:', error);
